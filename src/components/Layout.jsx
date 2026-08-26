@@ -1,7 +1,24 @@
+import { useEffect, useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
-import { Box, History } from 'lucide-react';
+import { Box, History, LogIn, LogOut } from 'lucide-react';
+import Button from './Button';
+import { getUser, logout } from '../utils/auth';
 
 export default function Layout({ children, compact = false }) {
+  const [user, setUser] = useState(() => getUser());
+
+  useEffect(() => {
+    const sync = () => setUser(getUser());
+    window.addEventListener('blackbox-auth-change', sync);
+    window.addEventListener('storage', sync);
+    return () => {
+      window.removeEventListener('blackbox-auth-change', sync);
+      window.removeEventListener('storage', sync);
+    };
+  }, []);
+
+  const handleLogout = () => { logout(); setUser(null); };
+
   return (
     <div className="app-shell">
       <header className="site-header">
@@ -13,7 +30,8 @@ export default function Layout({ children, compact = false }) {
           <nav className="top-nav" aria-label="주요 메뉴">
             {!compact && <a href="/#how">진단 방식</a>}
             <NavLink to="/reports"><History size={16} /> 복기 기록</NavLink>
-            <Link className="button button-sm" to="/diagnosis">무료 진단</Link>
+            {user ? <button className="nav-auth" onClick={handleLogout} title={user.email}><LogOut size={15}/> 로그아웃</button> : <NavLink className="nav-auth" to="/login"><LogIn size={15}/> 로그인</NavLink>}
+            <Button to="/diagnosis" size="sm">무료 진단</Button>
           </nav>
         </div>
       </header>
