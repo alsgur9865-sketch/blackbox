@@ -4,11 +4,13 @@ import Diagnosis from './pages/Diagnosis';
 import Analyzing from './pages/Analyzing';
 import Report from './pages/Report';
 import Reports from './pages/Reports';
+import Login from './pages/Login';
 
 export default function App() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
+      <Route path="/login" element={<Login />} />
       <Route path="/diagnosis" element={<Diagnosis />} />
       <Route path="/analyzing" element={<Analyzing />} />
       <Route path="/report/:id" element={<Report />} />
