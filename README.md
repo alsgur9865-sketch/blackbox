@@ -3,30 +3,30 @@
 > **내 투자 실수엔 패턴이 있다.**  
 > 거래내역과 투자 습관을 기반으로 반복되는 투자 판단 패턴을 복기하는 React 프론트엔드 MVP입니다.
 
-## Mission 6 구현 범위
+## Mission 6 핵심 기능 — 4개
 
-### 핵심 기능
-- CSV 업로드 / 샘플 거래 데이터 체험
-- 6문항 투자 습관 설문 + 입력 검증
-- 실제 입력값에 따라 결과가 달라지는 Rule-based 분석
-- 개인화 복기 리포트 생성
-- LocalStorage 저장 / 조회 / 삭제
+1. **거래 데이터 입력** — CSV 업로드 또는 샘플 거래 데이터 사용
+2. **투자 습관 진단** — 6문항 설문, 입력 상태 관리, 검증 및 오류 표시
+3. **Rule-based 패턴 분석** — 입력값에 따라 FOMO/손절 지연/정보 과의존/감정적 재진입 점수 계산
+4. **리포트 저장·조회** — 개인화 리포트 생성, LocalStorage 저장, 새로고침 유지, 기록 조회·삭제
 
-### React / UX
+## React / UX 구현
+
 - React + React Router 기반 다중 화면 흐름
-- `Button`, `Card`, `EmptyState`, `Layout`, `SectionTitle` 재사용 컴포넌트
+- `Button`, `Card`, `FormField`, `EmptyState`, `Layout`, `SectionTitle` 재사용 컴포넌트
 - 분석 Loading 상태
 - CSV/설문 Error state
 - 리포트 Empty state
 - 모바일 반응형 디자인
 - LocalStorage 기반 Mock 로그인 / 로그아웃
 
-### Mission 5 피드백 반영
-기존 랜딩의 콘텐츠 흐름을 유지하면서 Vertical Rhythm을 개선했습니다.
+## Mission 5 피드백 반영
+
+기존 랜딩의 콘텐츠 흐름을 유지하면서 Vertical Rhythm과 읽기 편한 섹션 간격을 개선했습니다.
 
 `Hero → Problem → How it works → Pattern Library → Sample Report → Checklist/Community → Pricing → FAQ → Final CTA`
 
-Hero/Final CTA는 충분한 높이를 확보하고, 정보 섹션은 콘텐츠 길이에 따라 자연스럽게 늘어나도록 설계했습니다.
+Hero와 Final CTA는 충분한 높이를 확보하고, 정보 섹션은 `padding` 기반으로 콘텐츠가 자연스럽게 읽히도록 구성했습니다.
 
 ## User Flow
 
@@ -78,15 +78,15 @@ React 18 · React Router 6 · Vite 5 · Lucide React · LocalStorage
 
 ## Mission 6 요구사항 체크
 
-- [x] 핵심 기능 2~4개 범위 확정
+- [x] 핵심 기능 2~4개 정의 — 4개로 확정
 - [x] React 화면 및 재사용 컴포넌트
 - [x] React Router 사용자 흐름
-- [x] useState/useEffect 기반 상태와 상호작용
+- [x] useState/useEffect/useMemo 기반 상태와 상호작용
 - [x] Mock Data / LocalStorage 저장 및 새로고침 유지
 - [x] LocalStorage Mock 인증
 - [x] Loading / Error / Empty state
 - [x] 일관된 디자인 시스템과 반응형 UI
-- [ ] Mock Server — 선택사항이므로 미사용
+- [ ] JSON Server / MirageJS — 선택사항이므로 미사용
 
 ## 면책
 
