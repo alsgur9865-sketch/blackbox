@@ -1,8 +1,11 @@
 import { HttpError } from './httpError.js';
 
+const DEFAULT_SUPABASE_URL = 'https://aurulvoglgzaditlinaf.supabase.co';
+const DEFAULT_SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_dkSD2bzamoFC4qY5fruCqA_IV2oT9BP';
+
 function getConfig() {
-  const url = process.env.SUPABASE_URL?.replace(/\/$/, '');
-  const key = process.env.SUPABASE_PUBLISHABLE_KEY;
+  const url = (process.env.SUPABASE_URL || DEFAULT_SUPABASE_URL).replace(/\/$/, '');
+  const key = process.env.SUPABASE_PUBLISHABLE_KEY || DEFAULT_SUPABASE_PUBLISHABLE_KEY;
   if (!url || !key) throw new HttpError(500, '서버 데이터베이스 설정이 완료되지 않았습니다.');
   return { url, key };
 }
