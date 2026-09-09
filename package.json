@@ -1,14 +1,22 @@
 {
-  "name": "blackbox-mission6",
+  "name": "blackbox-mission7",
   "private": true,
-  "version": "1.1.0",
+  "version": "2.0.0",
   "type": "module",
+  "engines": {
+    "node": "22.x"
+  },
   "scripts": {
     "dev": "vite --host 0.0.0.0",
+    "dev:api": "node server/dev.js",
     "build": "vite build",
-    "preview": "vite preview --host 0.0.0.0"
+    "preview": "vite preview --host 0.0.0.0",
+    "start:api": "node server/dev.js"
   },
   "dependencies": {
+    "cors": "2.8.5",
+    "dotenv": "17.2.2",
+    "express": "5.2.1",
     "lucide-react": "0.468.0",
     "react": "18.3.1",
     "react-dom": "18.3.1",

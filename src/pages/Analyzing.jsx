@@ -1,19 +1,31 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ScanSearch, CheckCircle2 } from 'lucide-react';
+import { AlertCircle, CheckCircle2, ScanSearch } from 'lucide-react';
 import Layout from '../components/Layout';
-import { analyzeInvestment } from '../utils/analyze';
-import { clearDraft, getDraft, saveReport } from '../utils/storage';
+import Button from '../components/Button';
+import { api } from '../services/api';
+import { clearDraft, getDraft } from '../utils/storage';
+
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export default function Analyzing(){
-  const navigate=useNavigate(); const [step,setStep]=useState(0);
+  const navigate = useNavigate();
+  const [step,setStep] = useState(0);
+  const [error,setError] = useState('');
+  const requestRef = useRef(null);
+
   useEffect(()=>{
-    const draft=getDraft(); if(!draft){navigate('/diagnosis',{replace:true});return;}
-    const timers=[setTimeout(()=>setStep(1),500),setTimeout(()=>setStep(2),1050),setTimeout(()=>setStep(3),1550),setTimeout(()=>{
-      const result=analyzeInvestment(draft.trades,draft.answers); const id=`report-${Date.now()}`;
-      saveReport({id,createdAt:new Date().toISOString(),...result}); clearDraft(); navigate(`/report/${id}`,{replace:true});
-    },2150)]; return()=>timers.forEach(clearTimeout);
+    const draft = getDraft();
+    if(!draft){ navigate('/diagnosis',{replace:true}); return undefined; }
+    if (!requestRef.current) requestRef.current = api.createReport({ trades: draft.trades, answers: draft.answers });
+    const timers = [setTimeout(()=>setStep(1),450),setTimeout(()=>setStep(2),900),setTimeout(()=>setStep(3),1350)];
+    let active = true;
+    Promise.all([requestRef.current, delay(1600)])
+      .then(([result]) => { if (!active) return; clearDraft(); navigate(`/report/${result.report.id}`, { replace:true }); })
+      .catch((requestError) => { if (!active) return; if (requestError.status === 401) navigate('/login?next=%2Fanalyzing', { replace:true }); else setError(requestError.message); });
+    return () => { active = false; timers.forEach(clearTimeout); };
   },[navigate]);
-  const labels=['거래 패턴 읽는 중','손실 행동 비교 중','투자 습관 교차분석 중'];
-  return <Layout compact><section className="analysis-screen"><div className="analysis-box"><div className="scan-icon"><ScanSearch size={34}/></div><span className="eyebrow">BLACKBOX ANALYSIS</span><h1>거래 속 반복 신호를 찾고 있어요.</h1><p>입력값에 따라 결과가 달라지는 Rule-based 분석을 실행합니다.</p><div className="analysis-steps">{labels.map((label,i)=><div className={step>i?'done':step===i?'active':''} key={label}>{step>i?<CheckCircle2 size={18}/>:<span>{i+1}</span>}<p>{label}</p></div>)}</div></div></section></Layout>;
+
+  const labels=['요청 데이터 검증 중','행동 패턴 서버 분석 중','리포트 DB 저장 중'];
+  return <Layout compact><section className="analysis-screen"><div className="analysis-box"><div className="scan-icon"><ScanSearch size={34}/></div><span className="eyebrow">BLACKBOX API ANALYSIS</span><h1>{error ? '분석 요청을 완료하지 못했습니다.' : '서버에서 반복 신호를 찾고 있어요.'}</h1><p>{error || 'Express API가 입력값을 검증하고 분석한 뒤 PostgreSQL에 리포트를 저장합니다.'}</p>{error ? <div className="analysis-error"><AlertCircle size={22}/><Button onClick={()=>window.location.reload()}>다시 시도</Button><Button to="/diagnosis" variant="ghost">입력 화면</Button></div> : <div className="analysis-steps">{labels.map((label,i)=><div className={step>i?'done':step===i?'active':''} key={label}>{step>i?<CheckCircle2 size={18}/>:<span>{i+1}</span>}<p>{label}</p></div>)}</div>}</div></section></Layout>;
 }

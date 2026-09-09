@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { Box, History, LogIn, LogOut } from 'lucide-react';
 import Button from './Button';
-import { getUser, logout } from '../utils/auth';
+import { api } from '../services/api';
+import { clearSession, getUser } from '../utils/auth';
 
 export default function Layout({ children, compact = false }) {
   const [user, setUser] = useState(() => getUser());
+  const navigate = useNavigate();
 
   useEffect(() => {
     const sync = () => setUser(getUser());
@@ -17,7 +19,12 @@ export default function Layout({ children, compact = false }) {
     };
   }, []);
 
-  const handleLogout = () => { logout(); setUser(null); };
+  const handleLogout = async () => {
+    try { await api.logout(); } catch {}
+    clearSession();
+    setUser(null);
+    navigate('/');
+  };
 
   return (
     <div className="app-shell">
@@ -29,7 +36,7 @@ export default function Layout({ children, compact = false }) {
           </Link>
           <nav className="top-nav" aria-label="주요 메뉴">
             {!compact && <a href="/#how">진단 방식</a>}
-            <NavLink to="/reports"><History size={16} /> 복기 기록</NavLink>
+            {user && <NavLink to="/reports"><History size={16} /> 복기 기록</NavLink>}
             {user ? <button className="nav-auth" onClick={handleLogout} title={user.email}><LogOut size={15}/> 로그아웃</button> : <NavLink className="nav-auth" to="/login"><LogIn size={15}/> 로그인</NavLink>}
             <Button to="/diagnosis" size="sm">무료 진단</Button>
           </nav>
@@ -38,7 +45,7 @@ export default function Layout({ children, compact = false }) {
       <main>{children}</main>
       <footer className="footer">
         <div className="container footer-inner">
-          <div><strong>BLACKBOX</strong><p>과거 매매를 복기하고 투자 습관을 진단하는 프론트엔드 MVP</p></div>
+          <div><strong>BLACKBOX</strong><p>React · Express REST API · Supabase PostgreSQL로 동작하는 풀스택 MVP</p></div>
           <p className="fineprint">본 서비스는 투자자문·종목추천 서비스가 아닙니다. 진단 결과는 학습 및 자기복기를 위한 참고용입니다.</p>
         </div>
       </footer>

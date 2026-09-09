@@ -1,0 +1,6 @@
+symbol,buyPrice,sellPrice,preRisePct,holdingDays,source
+ALPHA,51000,43800,18.4,22,community
+BETA,32700,29900,13.1,17,youtube
+GAMMA,18400,21200,2.6,5,analysis
+DELTA,76500,70100,11.8,15,community
+EPSILON,24300,27900,3.2,4,news
