@@ -12,14 +12,22 @@ app.use(cors({
     try {
       const url = new URL(origin);
       const configured = process.env.FRONTEND_URL;
-      if (origin === configured || origin === 'http://localhost:5173' || url.hostname.endsWith('.vercel.app')) return callback(null, true);
+      if (
+        origin === configured ||
+        origin === 'http://localhost:5173' ||
+        url.hostname.endsWith('.vercel.app')
+      ) return callback(null, true);
     } catch {}
     return callback(null, false);
   }
 }));
+
 app.use(express.json({ limit: '1mb' }));
 
-app.get('/api/health', (_req, res) => res.json({ ok: true, service: 'blackbox-api', version: '7.0.0' }));
+app.get('/api/health', (_req, res) =>
+  res.json({ ok: true, service: 'blackbox-api', version: '8.0.0' })
+);
+
 app.use('/api/auth', authRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api', notFound);

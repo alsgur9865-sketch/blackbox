@@ -7,21 +7,51 @@ create table if not exists public.reports (
   stats jsonb not null,
   trades jsonb not null,
   answers jsonb not null,
+  ai_review jsonb,
+  ai_review_model text,
+  ai_review_created_at timestamptz,
   created_at timestamptz not null default now()
 );
 
-create index if not exists reports_user_created_idx on public.reports (user_id, created_at desc);
+alter table public.reports add column if not exists ai_review jsonb;
+alter table public.reports add column if not exists ai_review_model text;
+alter table public.reports add column if not exists ai_review_created_at timestamptz;
+
+create index if not exists reports_user_created_idx
+  on public.reports (user_id, created_at desc);
 
 alter table public.reports enable row level security;
 
 revoke all on table public.reports from anon;
 grant select, insert, delete on table public.reports to authenticated;
+grant update (ai_review, ai_review_model, ai_review_created_at)
+  on table public.reports to authenticated;
 
 drop policy if exists "Users can read own reports" on public.reports;
-create policy "Users can read own reports" on public.reports for select to authenticated using ((select auth.uid()) = user_id);
+create policy "Users can read own reports"
+  on public.reports
+  for select
+  to authenticated
+  using ((select auth.uid()) = user_id);
 
 drop policy if exists "Users can insert own reports" on public.reports;
-create policy "Users can insert own reports" on public.reports for insert to authenticated with check ((select auth.uid()) = user_id);
+create policy "Users can insert own reports"
+  on public.reports
+  for insert
+  to authenticated
+  with check ((select auth.uid()) = user_id);
+
+drop policy if exists "Users can update own AI review" on public.reports;
+create policy "Users can update own AI review"
+  on public.reports
+  for update
+  to authenticated
+  using ((select auth.uid()) = user_id)
+  with check ((select auth.uid()) = user_id);
 
 drop policy if exists "Users can delete own reports" on public.reports;
-create policy "Users can delete own reports" on public.reports for delete to authenticated using ((select auth.uid()) = user_id);
+create policy "Users can delete own reports"
+  on public.reports
+  for delete
+  to authenticated
+  using ((select auth.uid()) = user_id);
