@@ -1,57 +1,82 @@
-# BLACKBOX Mission 7 REST API
+# BLACKBOX Mission 8 REST API
 
 Base URL: `/api`
 
 ## Authentication
 
-### POST `/api/auth/register`
-Request: `{ "email": "user@example.com", "password": "secret12" }`
-
-- `201`: 회원가입과 동시에 JWT 세션 발급
-- `202`: 이메일 인증이 필요한 경우 안내 응답
-- `400`: 입력 오류
-
-### POST `/api/auth/login`
-Request: `{ "email": "user@example.com", "password": "secret12" }`
-
-Response `200`:
-```json
-{
-  "accessToken": "<JWT>",
-  "refreshToken": "<refresh-token>",
-  "expiresIn": 3600,
-  "user": { "id": "<uuid>", "email": "user@example.com" }
-}
-```
-
-### POST `/api/auth/logout`
-Authorization: `Bearer <JWT>`
-Response: `204 No Content`
+- `POST /api/auth/register`
+- `POST /api/auth/login`
+- `POST /api/auth/logout`
 
 ## Reports
 
-All report endpoints require `Authorization: Bearer <JWT>`.
+모든 리포트 API는 JWT 인증이 필요합니다.
 
-### POST `/api/reports`
-Validates trade data and six survey answers, calculates the rule-based analysis on the Express server, and stores it in PostgreSQL.
+- `POST /api/reports` - Rule-based 분석 후 리포트 저장
+- `GET /api/reports` - 내 리포트 목록
+- `GET /api/reports/:id` - 내 리포트 상세
+- `DELETE /api/reports/:id` - 내 리포트 삭제
 
-### GET `/api/reports`
-Returns up to 50 reports owned by the authenticated user, newest first.
+## Action Plans - Mission 8
 
-### GET `/api/reports/:id`
-Returns one owned report. Missing or non-owned resources return `404`.
+### POST `/api/action-plans`
 
-### DELETE `/api/reports/:id`
-Deletes one owned report and returns `204`.
+리포트의 행동 패턴 중 하나를 개인 개선 계획으로 저장합니다.
+
+Request:
+```json
+{
+  "reportId": "<report uuid>",
+  "patternKey": "fomo"
+}
+```
+
+서버는 클라이언트가 임의의 제목/행동 문구를 저장하지 못하도록
+본인 소유 리포트에서 해당 패턴의 `name`과 `action`을 직접 읽어 저장합니다.
+
+Success: `201 Created`
+
+Duplicate: `409 Conflict`
+
+### GET `/api/action-plans`
+
+로그인한 사용자의 개선 계획을 최신순으로 반환합니다.
+
+### PATCH `/api/action-plans/:id`
+
+Request:
+```json
+{
+  "status": "completed"
+}
+```
+
+허용 상태:
+- `active`
+- `completed`
+
+완료 시 `completed_at`이 저장되고 다시 진행하기로 변경하면 `null`로 돌아갑니다.
+
+### DELETE `/api/action-plans/:id`
+
+본인 소유 개선 계획을 삭제합니다.
+
+## Security
+
+- 모든 Action Plan API는 Bearer JWT 필요
+- 서버에서 `user_id` 필터 적용
+- Supabase RLS에서 `auth.uid() = user_id` 검사
+- Action Plan INSERT/UPDATE 시 연결된 `report_id` 역시 로그인 사용자의 리포트인지 검사
+- authenticated 역할은 `status`, `completed_at` 컬럼만 UPDATE 가능
 
 ## Health
 
-### GET `/api/health`
-```json
-{ "ok": true, "service": "blackbox-api", "version": "7.0.0" }
-```
+`GET /api/health`
 
-## Error shape
 ```json
-{ "message": "사용자가 이해할 수 있는 오류 메시지" }
+{
+  "ok": true,
+  "service": "blackbox-api",
+  "version": "8.0.0"
+}
 ```

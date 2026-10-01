@@ -45,15 +45,34 @@ async function request(path, { method = 'GET', body, auth = true } = {}) {
 export const api = {
   register: (email, password) =>
     request('/auth/register', { method: 'POST', body: { email, password }, auth: false }),
+
   login: (email, password) =>
     request('/auth/login', { method: 'POST', body: { email, password }, auth: false }),
+
   logout: () => request('/auth/logout', { method: 'POST' }),
+
   createReport: (payload) => request('/reports', { method: 'POST', body: payload }),
   getReports: () => request('/reports'),
   getReport: (id) => request(`/reports/${encodeURIComponent(id)}`),
-  generateAiReview: (id) =>
-    request(`/reports/${encodeURIComponent(id)}/ai-review`, { method: 'POST' }),
   deleteReport: (id) =>
     request(`/reports/${encodeURIComponent(id)}`, { method: 'DELETE' }),
+
+  createActionPlan: (reportId, patternKey) =>
+    request('/action-plans', {
+      method: 'POST',
+      body: { reportId, patternKey }
+    }),
+
+  getActionPlans: () => request('/action-plans'),
+
+  updateActionPlan: (id, status) =>
+    request(`/action-plans/${encodeURIComponent(id)}`, {
+      method: 'PATCH',
+      body: { status }
+    }),
+
+  deleteActionPlan: (id) =>
+    request(`/action-plans/${encodeURIComponent(id)}`, { method: 'DELETE' }),
+
   health: () => request('/health', { auth: false })
 };
