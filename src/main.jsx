@@ -2,8 +2,12 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App';
+import { initAnalytics } from './analytics';
+import { getUser } from './utils/auth';
 import './mission7.css';
 import './mission8.css';
+
+initAnalytics(getUser());
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>

@@ -3,9 +3,7 @@
   "private": true,
   "version": "2.0.0",
   "type": "module",
-  "engines": {
-    "node": "22.x"
-  },
+  "engines": {"node": "22.x"},
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "dev:api": "node server/dev.js",
@@ -14,6 +12,7 @@
     "start:api": "node server/dev.js"
   },
   "dependencies": {
+    "@amplitude/analytics-browser": "2.47.2",
     "cors": "2.8.5",
     "dotenv": "17.2.2",
     "express": "5.2.1",
