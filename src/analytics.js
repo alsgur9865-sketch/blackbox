@@ -72,34 +72,6 @@ export function resetAnalyticsUser() {
   identifyProps('anonymous');
 }
 
-function routeEvent() {
-  const map = {
-    '/': 'landing_viewed',
-    '/login': 'auth_page_viewed',
-    '/diagnosis': 'diagnosis_started',
-    '/reports': 'reports_list_viewed',
-    '/action-plans': 'action_plans_viewed'
-  };
-  const name = map[location.pathname];
-  if (name) trackEvent(name);
-}
-
-function installRouteTracking() {
-  const push = history.pushState.bind(history);
-  const replace = history.replaceState.bind(history);
-
-  history.pushState = (...args) => {
-    push(...args);
-    queueMicrotask(routeEvent);
-  };
-  history.replaceState = (...args) => {
-    replace(...args);
-    queueMicrotask(routeEvent);
-  };
-  addEventListener('popstate', () => queueMicrotask(routeEvent));
-  routeEvent();
-}
-
 function parseBody(body) {
   if (typeof body !== 'string') return null;
   try { return JSON.parse(body); } catch { return null; }
@@ -244,5 +216,4 @@ export function initAnalytics(existingUser = null) {
   else identifyProps('anonymous');
 
   installApiTracking();
-  installRouteTracking();
 }

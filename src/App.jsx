@@ -6,6 +6,7 @@ import Report from './pages/Report';
 import Reports from './pages/Reports';
 import ActionPlans from './pages/ActionPlans';
 import Login from './pages/Login';
+import AnalyticsRouteTracker from './components/AnalyticsRouteTracker';
 import { getToken } from './utils/auth';
 
 function ProtectedRoute({ children }) {
@@ -21,17 +22,21 @@ function ProtectedRoute({ children }) {
 
 export default function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/login" element={<Login />} />
+    <>
+      <AnalyticsRouteTracker />
 
-      <Route path="/diagnosis" element={<ProtectedRoute><Diagnosis /></ProtectedRoute>} />
-      <Route path="/analyzing" element={<ProtectedRoute><Analyzing /></ProtectedRoute>} />
-      <Route path="/report/:id" element={<ProtectedRoute><Report /></ProtectedRoute>} />
-      <Route path="/reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
-      <Route path="/action-plans" element={<ProtectedRoute><ActionPlans /></ProtectedRoute>} />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
 
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+        <Route path="/diagnosis" element={<ProtectedRoute><Diagnosis /></ProtectedRoute>} />
+        <Route path="/analyzing" element={<ProtectedRoute><Analyzing /></ProtectedRoute>} />
+        <Route path="/report/:id" element={<ProtectedRoute><Report /></ProtectedRoute>} />
+        <Route path="/reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
+        <Route path="/action-plans" element={<ProtectedRoute><ActionPlans /></ProtectedRoute>} />
+
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </>
   );
 }
