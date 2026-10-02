@@ -117,16 +117,6 @@ async function onApiSuccess(path, method, body, response) {
     return;
   }
 
-  if (path === '/api/reports' && method === 'POST') {
-    const data = await getJson(response);
-    trackEvent('report_generated', {
-      report_id: data?.report?.id,
-      trade_count: Array.isArray(body?.trades) ? body.trades.length : undefined,
-      pattern_count: Array.isArray(data?.report?.patterns) ? data.report.patterns.length : undefined
-    });
-    return;
-  }
-
   if (/^\/api\/reports\/[0-9a-f-]+$/i.test(path) && method === 'GET') {
     const data = await getJson(response);
     trackEvent('report_viewed', {
@@ -165,19 +155,12 @@ async function onApiSuccess(path, method, body, response) {
 function installApiTracking() {
   if (window.__blackboxAnalyticsFetchInstalled) return;
   window.__blackboxAnalyticsFetchInstalled = true;
-
   const originalFetch = window.fetch.bind(window);
 
   window.fetch = async (input, init = {}) => {
     const path = getPath(input);
     const method = String(init.method || input?.method || 'GET').toUpperCase();
     const body = parseBody(init.body);
-
-    if (path === '/api/reports' && method === 'POST') {
-      trackEvent('diagnosis_submitted', {
-        trade_count: Array.isArray(body?.trades) ? body.trades.length : undefined
-      });
-    }
 
     const response = await originalFetch(input, init);
 
